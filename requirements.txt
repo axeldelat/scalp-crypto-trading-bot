@@ -1,0 +1,4 @@
+# Python dependencies
+python-binance
+python-dotenv
+pandas
