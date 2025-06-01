@@ -56,4 +56,4 @@ if __name__ == "__main__":
     # Start bot loop
     while True:
         executor.run_once()
-        time.sleep(60)  # Match with your candle timeframe (e.g., 900 for 15m)
+        time.sleep(3600)  # Match with your candle timeframe (e.g., 900 for 15m)

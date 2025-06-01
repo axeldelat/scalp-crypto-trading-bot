@@ -14,7 +14,7 @@ STRATEGY_CONFIG = {
     "name": "mean_reversion",  # Options: "mean_reversion", "scalping"
     "mean_reversion": {
         "drop_threshold_pct": 1.0,     # Buy when price drops > 5%
-        "rebound_threshold_pct": 10.0, # Sell after 10% rebound
+        "rebound_threshold_pct": 3.0, # Sell after 10% rebound
         "lookback_period": 20          # Periods to look back for average
     },
     "scalping": {
@@ -25,11 +25,11 @@ STRATEGY_CONFIG = {
 
 # Trade and Market Settings
 TRADING_CONFIG = {
-    "pair": "LTCUSDT",
+    "pair": "XRPUSDT",
     "timeframe": "1h",
-    "trade_amount_usd": 10.0,
+    "trade_amount_usd": 20.0,
     "testnet": False,  # Set to True for testnet support
-    "paper_trading": True,  # Toggle this to False for live trading
+    "paper_trading": False,  # Toggle this to False for live trading
     "paper_balance_usdt": 250.0  # Starting simulated balance
 }
 
