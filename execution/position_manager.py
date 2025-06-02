@@ -3,7 +3,7 @@ import os
 import time
 
 class PositionManager:
-    def __init__(self, state_file="positions.json"):
+    def __init__(self, state_file="state/positions.json"):
         self.state_file = state_file
         self.positions = self._load()
 
