@@ -1,11 +1,10 @@
+# main.py
 import time
 import logging
-import argparse
-
 from execution.executor import TradeExecutor
-from config.settings import TRADING_CONFIG
+from config.settings import ENVIRONMENT, TRADING_CONFIG
 
-# Configure logging: to both console and file
+# --- Logging setup ---
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s | %(levelname)s | %(message)s',
@@ -15,45 +14,36 @@ logging.basicConfig(
     ]
 )
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--live", action="store_true", help="Run in LIVE mode (overrides paper mode)")
-    return parser.parse_args()
-
-def show_mode_banner(paper_mode):
-    if paper_mode:
-        print("\n🧻 PAPER TRADING MODE ENABLED — NO REAL MONEY AT RISK 💸\n")
-        logging.info("MODE: PAPER")
-    else:
+def show_banner():
+    if ENVIRONMENT == "testnet":
+        print("\n🧪 TESTNET MODE ACTIVE — SIMULATED TRADING\n")
+        logging.info("MODE: TESTNET")
+    elif ENVIRONMENT == "live":
         print("\n🚨 LIVE TRADING MODE ENABLED — REAL FUNDS AT RISK ⚠️\n")
         logging.info("MODE: LIVE")
 
-if __name__ == "__main__":
-    args = parse_args()
-
-    # Override paper trading mode if --live is passed
-    if args.live:
-        TRADING_CONFIG["paper_trading"] = False
-
-    show_mode_banner(TRADING_CONFIG["paper_trading"])
-
+def main():
+    show_banner()
     executor = TradeExecutor()
 
-    # Show balances
-    if TRADING_CONFIG["paper_trading"]:
-        balance = executor.paper.get_balance()
-        print(f"🧾 Starting Paper Balance: {balance}")
-        logging.info(f"Paper Balance: {balance}")
-        open_positions = executor.position_mgr.get_all_positions()
-        if open_positions:
-            print(f"📦 Resuming with open positions: {open_positions}")
-            logging.info(f"Open positions loaded: {open_positions}")
-    else:
+    # Show balance info only in LIVE mode
+    if ENVIRONMENT != "testnet":
         usdt = executor.api.get_asset_balance("USDT")
-        print(f"💰 Live USDT Balance: {usdt}")
-        logging.info(f"Live USDT Balance: {usdt}")
+        if usdt:
+            print(f"💰 USDT Balance: {usdt}")
+            logging.info(f"USDT Balance: {usdt}")
+    else:
+        logging.info("⏭️ Skipping balance fetch in testnet mode.")
 
-    # Start bot loop
+    open_positions = executor.position_mgr.get_all_positions()
+    if open_positions:
+        print(f"📦 Resuming with open positions: {open_positions}")
+        logging.info(f"Open positions loaded: {open_positions}")
+
+    # --- Start bot loop ---
     while True:
         executor.run_once()
-        time.sleep(3600)  # Match with your candle timeframe (e.g., 900 for 15m)
+        time.sleep(3600)  # 1-hour interval
+
+if __name__ == "__main__":
+    main()
